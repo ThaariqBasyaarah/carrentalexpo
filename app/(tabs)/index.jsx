@@ -5,6 +5,7 @@ import { Col, Row } from "../../components/Grid";
 import ButtonIcon from "../../components/ButtonIcon";
 import CarList from "../../components/CarList";
 import { useState, useEffect } from "react";
+import { router } from 'expo-router';
 
 export default function HomeScreen() {
   const [cars, setCars] = useState([]);
@@ -100,6 +101,9 @@ export default function HomeScreen() {
           passengers={5}
           baggage={4}
           price={item.price}
+          onPress={() => 
+            router.navigate('(listcar)/details/' + item.id)
+          }
         />
       )}
       viewabilityConfig={{
