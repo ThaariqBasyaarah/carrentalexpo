@@ -6,6 +6,7 @@ import ButtonIcon from "../../components/ButtonIcon";
 import CarList from "../../components/CarList";
 import { useState, useEffect } from "react";
 import { router } from 'expo-router';
+import * as SecureStore from 'expo-secure-store';
 
 export default function HomeScreen() {
   const [cars, setCars] = useState([]);
@@ -17,6 +18,7 @@ export default function HomeScreen() {
 
     setLoading(true); //loading state
     const getData = async () => {
+      console.log(await SecureStore.getItemAsync("user"))
       try{
         const response = await fetch(
           "https://api-car-rental.binaracademy.org/customer/car",
@@ -102,7 +104,7 @@ export default function HomeScreen() {
           baggage={4}
           price={item.price}
           onPress={() => 
-            router.navigate('(listcar)/details/' + item.id)
+            router.push('(listcar)/details/'+ item.id)
           }
         />
       )}

@@ -2,11 +2,10 @@ import { Stack } from 'expo-router';
 
 export default function ListCarLayout() {
   return (
-    <Stack
-      screenOptions={{
+    <Stack>
+      <Stack.Screen options={{
         headerShown: false,
-      }}>
-      <Stack.Screen name="index" />
+      }} name="index" />
       <Stack.Screen name="details/[id]" />
     </Stack>
   );

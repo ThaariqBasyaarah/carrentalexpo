@@ -2,6 +2,7 @@ import { StyleSheet, FlatList, View, Text, ActivityIndicator } from 'react-nativ
 import {useState, useEffect } from 'react'
 import CarList from '@/components/CarList';
 import Constants from 'expo-constants';
+import { router } from 'expo-router';
 
 export default function listcar() {
   const [cars, setCars] = useState([]);
@@ -63,6 +64,9 @@ export default function listcar() {
             passengers={5}
             baggage={4}
             price={item.price}
+            onPress={() => 
+              router.push('details/'+ item.id)
+            }
           />
         )}
         viewabilityConfig={{
