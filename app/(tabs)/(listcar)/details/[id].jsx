@@ -2,52 +2,38 @@ import { View, Text, ScrollView, Image, Button, StyleSheet } from 'react-native'
 import { useLocalSearchParams } from 'expo-router'
 import { useState, useEffect } from 'react'
 
+import { useSelector, useDispatch } from 'react-redux'
+import { getCarDetails, selectCarDetails } from '@/redux/reducers/car/carDetailsSlice'
+
 export default function details() {
   const { id } = useLocalSearchParams();
-  const [cars, setCars] = useState({});
-  const [loading, setLoading] = useState(false);
+
+  const { data, isLoading } = useSelector(selectCarDetails)
+  const dispatch = useDispatch();
 
   useEffect(() => {
     const controller = new AbortController(); // UseEffect cleanup untuk menghindari memory Leak
     const signal = controller.signal;  // UseEffect cleanup
 
-    setLoading(true); //loading state
-    const getData = async () => {
-      try{
-        const response = await fetch(
-          "https://api-car-rental.binaracademy.org/customer/car/" + id,
-          { signal: signal }  // UseEffect cleanup
-        );
-        const body = await response.json();
-        setCars(body);
-      } catch(e) {
-        console.log(e) // Error Handling
-        if (err.name === 'AbortError') {
-          console.log('successfully aborted');
-        } else {
-          console.log(err)
-        }
-      }
-    };
-    getData();
+    dispatch(getCarDetails({id, signal}))
+
     return () => {
-        // cancel request sebelum component di close
-         
+      controller.abort();
     };
   }, [id]);
 
   return (
     <View style={style.container}>
       <ScrollView>
-        <Text>{cars.name}</Text>
+        <Text>{data.name}</Text>
         <Image 
-          source={{uri: cars.image}}
+          source={{uri: data.image}}
           height={100}
           width={100}
         />
       </ScrollView>
       <View style={style.footer}>
-        <Text style={style.price}>{cars.price}</Text>
+        <Text style={style.price}>{data.price}</Text>
         <Button
           color='#3D7B3F'
           title="Lanjutkan Pembayaran"

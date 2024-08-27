@@ -8,33 +8,19 @@ import { useState, useEffect } from "react";
 import { router } from 'expo-router';
 import * as SecureStore from 'expo-secure-store';
 
+import { useSelector, useDispatch } from 'react-redux'
+import { getCar, selectCar } from '@/redux/reducers/car/carSlice'
+
 export default function HomeScreen() {
-  const [cars, setCars] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const { data, isLoading } = useSelector(selectCar)
+  const dispatch = useDispatch();
 
   useEffect(() => {
     const controller = new AbortController(); // UseEffect cleanup untuk menghindari memory Leak
     const signal = controller.signal;  // UseEffect cleanup
-
-    setLoading(true); //loading state
-    const getData = async () => {
-      console.log(await SecureStore.getItemAsync("user"))
-      try{
-        const response = await fetch(
-          "https://api-car-rental.binaracademy.org/customer/car",
-          { signal: signal }  // UseEffect cleanup
-        );
-        const body = await response.json();
-        setCars(body);
-      } catch(e) { // Error Handling
-        if (err.name === 'AbortError') {
-          console.log('successfully aborted');
-        } else {
-          console.log(err)
-        }
-      }
-    };
-    getData();
+    
+    dispatch(getCar(signal))
+    
     return () => {
         // cancel request sebelum component di close
         controller.abort();
@@ -91,8 +77,8 @@ export default function HomeScreen() {
           </View>
         </>
       }
-      loading={loading}
-      data={cars}
+      loading={isLoading}
+      data={data}
       keyExtractor={(item) => item.id.toString()}
       renderItem={({ item }) => (
         <CarList
