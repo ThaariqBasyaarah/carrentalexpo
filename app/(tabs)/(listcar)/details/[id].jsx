@@ -19,6 +19,7 @@ import Button from "@/components/Button";
 import { Row, Col } from "@/components/Grid";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { normalize } from "@/utils/normalize";
+import { setCarId } from "@/redux/reducers/order/orderSlice";
 
 const formatCurrency = new Intl.NumberFormat("id-ID", {
   style: "currency",
@@ -52,10 +53,11 @@ export default function details() {
       const signal = controller.signal; // UseEffect cleanup
 
       dispatch(getCarDetails({ id, signal }));
+      dispatch(setCarId(id))
 
       return () => {
         controller.abort();
-        dispatch(closeDetails());
+        // dispatch(closeDetails());
       };
     }, [id])
   );
@@ -64,7 +66,10 @@ export default function details() {
 
   return (
     <View style={styles.container}>
-      <Button style={styles.backButton} onPress={() => router.back()}>
+      <Button style={styles.backButton} onPress={() => {
+        dispatch(closeDetails())
+        router.back()
+      }}>
         <Ionicons size={32} name={"arrow-back"} color={"#00000"} />
       </Button>
       <ScrollView contentContainerStyle={styles.contentContainer}>
@@ -93,7 +98,10 @@ export default function details() {
         <Text style={styles.price}>{formatIDR(data.price || 0)}</Text>
         <Button
           color="#3D7B3F"
-          onPress={() => router.navigate("(order)")}
+          onPress={() => {
+            dispatch(setCarId(id))
+            router.navigate("(order)")
+          }}
           title="Lanjutkan Pembayaran"
         />
       </View>

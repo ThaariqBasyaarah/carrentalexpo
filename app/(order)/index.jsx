@@ -1,25 +1,23 @@
 import { View, Text } from "react-native";
 import { ProgressStep, ProgressSteps } from "react-native-progress-stepper";
-import React from "react";
+import Step1 from "./steps/Step1";
+import Step2 from "./steps/Step2";
+import Step3 from "./steps/Step3";
+import React, { useState } from "react";
 
 export default function index() {
+  const [activeStep, setActiveStep] = useState(0)
   return (
     <View style={{ flex: 1 }}>
-      <ProgressSteps>
-        <ProgressStep label="First Step">
-          <View style={{ alignItems: "center" }}>
-            <Text>This is the content within step 1!</Text>
-          </View>
+      <ProgressSteps removeBtnRow={true} activeStep={activeStep}>
+        <ProgressStep label="Pilih Metode" nextBtnStyle={{display:'none'}}>
+          <Step1 setActiveStep={setActiveStep}/>
         </ProgressStep>
-        <ProgressStep label="Second Step">
-          <View style={{ alignItems: "center" }}>
-            <Text>This is the content within step 2!</Text>
-          </View>
+        <ProgressStep label="Bayar" nextBtnStyle={{display:'none'}}>
+          <Step2 setActiveStep={setActiveStep}/>
         </ProgressStep>
-        <ProgressStep label="Third Step">
-          <View style={{ alignItems: "center" }}>
-            <Text>This is the content within step 3!</Text>
-          </View>
+        <ProgressStep label="Tiket" nextBtnStyle={{display:'none'}}>
+          <Step3 setActiveStep={setActiveStep}/>
         </ProgressStep>
       </ProgressSteps>
     </View>
