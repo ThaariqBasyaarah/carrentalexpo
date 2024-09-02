@@ -27,12 +27,13 @@ export default function RootLayout() {
 
   useEffect(() => {
     if (loaded) {
-      // if(getUser()){
-      //   router.navigate('/(tabs)')
-      // }
+      setTimeout(() => {
+        if(getUser()) router.navigate('/(tabs)')
+      }, 200)
+
       setTimeout(() => {
         SplashScreen.hideAsync();
-      }, 500)
+      }, 1000 )
     }
   }, [loaded]);
 
@@ -43,9 +44,10 @@ export default function RootLayout() {
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
       <Provider store={store}>
-        <Stack>
+        <Stack initialRouteName='(auth)'>
           <Stack.Screen name="(auth)" options={{ headerShown: false }} />
           <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+          <Stack.Screen name="(order)" options={{ headerShown: false }} />
           <Stack.Screen name="+not-found" />
         </Stack>
       </Provider>

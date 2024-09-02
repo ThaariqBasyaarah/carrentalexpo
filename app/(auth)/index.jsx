@@ -1,33 +1,31 @@
-import { View, Text, Image, TextInput, Button, StyleSheet } from "react-native";
-import { useEffect, useState } from "react";
+import { View, Text, Image, TextInput, StyleSheet } from "react-native";
+import Button from "../../components/Button";
+import { useCallback, useEffect, useState } from "react";
 import ModalPopup from "../../components/Modal";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { Link, router } from "expo-router";
-import * as SecureStore from 'expo-secure-store';
 import { useDispatch, useSelector } from "react-redux";
 import { postLogin, selectUser, closeModal } from '@/redux/reducers/auth/loginSlice';
 
-async function save(key, value){
-    await SecureStore.setItemAsync(key, value)
-}
-
 export default function Login() {
-  const {errorMessage, isModalVisible, isError} = useSelector(selectUser);
   const dispatch = useDispatch();
+  const {errorMessage, isModalVisible, isError} = useSelector(selectUser);
   const [formData, setFormData] = useState({
     email: "",
     password: "",
   });
+
   const handleChange = (name, text) => {
     setFormData({
       ...formData,
       [name]: text,
     });
   };
-  const handleSubmit = async () => {
+
+  const handleSubmit = useCallback(() => {
     console.log("test submit", formData);
     dispatch(postLogin(formData))
-  };
+  }, [formData]);
   
   useEffect(() => {
     if(isModalVisible) {
@@ -125,4 +123,5 @@ const styles = StyleSheet.create({
     borderRadius: 4,
     padding:20
   }
+
 });

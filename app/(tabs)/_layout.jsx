@@ -33,6 +33,7 @@ export default function TabLayout() {
         name="(listcar)"
         options={{
           title: "List Car",
+          href: "/(listcar)",
           tabBarStyle: {
             display: segments.includes('details') ? 
             'none' : 'flex'

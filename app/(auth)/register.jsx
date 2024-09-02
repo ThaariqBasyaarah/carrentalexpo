@@ -76,10 +76,11 @@ export default function Register() {
             />
       </View>
       <View style={styles.formContainer}>
-        <Button 
-            onPress={() => handleSubmit()}
-            color='#3D7B3F'
-            title="Sign Up"/>
+        <Button
+          onPress={() => handleSubmit()}
+          color="#3D7B3F"
+          title="Sign Up"
+        />
         <Text style={styles.textRegister}>
             Already have an account?{` `}
             <Link style={styles.linkRegister} href="/">Sign in free</Link></Text>

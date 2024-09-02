@@ -4,7 +4,7 @@ import Constants from "expo-constants";
 import { Col, Row } from "../../components/Grid";
 import ButtonIcon from "../../components/ButtonIcon";
 import CarList from "../../components/CarList";
-import { useState, useEffect } from "react";
+import { useEffect, useCallback } from "react";
 import { router } from 'expo-router';
 import * as SecureStore from 'expo-secure-store';
 
@@ -26,6 +26,22 @@ export default function HomeScreen() {
         controller.abort();
     };
   }, []);
+
+  const renderItem = useCallback(
+    ({item}) => {
+      return <CarList
+        style={{marginHorizontal: 20}}
+        key={item.id}
+        image={{ uri: item.image }}
+        carName={item.name}
+        passengers={5}
+        baggage={4}
+        price={item.price}
+        onPress={() => router.push("(listcar)/details/" + item.id)}
+      />
+    },
+    []
+  );
 
   return (
     <ParallaxFlatList
@@ -80,20 +96,7 @@ export default function HomeScreen() {
       loading={isLoading}
       data={data}
       keyExtractor={(item) => item.id.toString()}
-      renderItem={({ item }) => (
-        <CarList
-          style={{marginHorizontal:20}}
-          key={item.id}
-          image={{ uri: item.image }}
-          carName={item.name}
-          passengers={5}
-          baggage={4}
-          price={item.price}
-          onPress={() => 
-            router.push('(listcar)/details/'+ item.id)
-          }
-        />
-      )}
+      renderItem={renderItem}
       viewabilityConfig={{
         waitForInteraction: true,
       }}

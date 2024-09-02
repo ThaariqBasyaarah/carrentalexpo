@@ -1,6 +1,7 @@
 import { View, Text, Image, StyleSheet, Pressable } from "react-native";
-import React from "react";
+import React, { useCallback } from "react";
 import Ionicons from "@expo/vector-icons/Ionicons";
+import Button from "./Button";
 import { Row, Col } from "./Grid";
 
 const formatCurrency = new Intl.NumberFormat("id-ID", {
@@ -16,11 +17,12 @@ export default function CarList({
   baggage,
   price,
   style,
-}) {
+}) 
+{
+  const formatIDR = useCallback((price) => formatCurrency.format(price), []) 
+
   return (
-    <Pressable 
-        style={{ ...styles.card, ...style }} 
-        onPress={onPress}>
+    <Button style={{ ...styles.card, ...style }} onPress={onPress}>
       <Row alignItems={"center"} gap={20}>
         <Col>
           <Image style={styles.img} source={image} />
@@ -37,10 +39,10 @@ export default function CarList({
               <Text style={styles.capacityText}>{baggage}</Text>
             </Col>
           </Row>
-          <Text style={styles.price}>{formatCurrency.format(price)}</Text>
+          <Text style={styles.price}>{formatIDR(price)}</Text>
         </Col>
       </Row>
-    </Pressable>
+    </Button>
   );
 }
 
@@ -60,6 +62,7 @@ const styles = StyleSheet.create({
     padding: 20,
     marginBottom: 20,
     backgroundColor: "#fff",
+    alignItems: 'flex-start'
   },
   img: {
     width: 80,

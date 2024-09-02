@@ -2,7 +2,7 @@ import { createSlice } from "@reduxjs/toolkit";
 import { postLogin } from "./authApi";
 import * as SecureStore from 'expo-secure-store';
 
-const getStore = () => JSON.parse(SecureStore.getItem('user'))
+const getStore = () => SecureStore.getItem('user') && JSON.parse(SecureStore.getItem('user'))
 const setStore = (value) => SecureStore.setItem("user", JSON.stringify(value))
 
 const loginSlice = createSlice({
@@ -11,7 +11,7 @@ const loginSlice = createSlice({
     isLoading: false,
     data: getStore() ? getStore() : {},
     isModalVisible: false,
-    isLogin: false,
+    isLogin: getStore() ? true : false,
     isError: false,
     errorMessage: null,
   },
@@ -20,6 +20,11 @@ const loginSlice = createSlice({
       state.isModalVisible = false;
       state.isError = false;
       state.errorMessage = null
+    },
+    logout: (state) => {
+      state.data = {}
+      state.isLogin = false
+      SecureStore.deleteItemAsync("user")
     }
   },
   extraReducers: (builder) => {
@@ -43,6 +48,6 @@ const loginSlice = createSlice({
 });
 
 export { postLogin };
-export const { closeModal } = loginSlice.actions
+export const { closeModal, logout } = loginSlice.actions
 export const selectUser = state => state.user //selector
 export default loginSlice.reducer
