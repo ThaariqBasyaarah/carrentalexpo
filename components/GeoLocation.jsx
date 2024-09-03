@@ -63,14 +63,22 @@ export default GeoLocation = () => {
       console.log(responce);
       //loop on the responce to get the actual result
       for (let item of responce) {
-        const loc = item.name !== "" ? `${item.name} ${item.city }` : `${item.region}, ${item.country }`
+        const loc =
+          item.name !== ""
+            ? `${item.name} ${item.city}`
+            : `${item.region}, ${item.country}`;
         let address = loc;
         setDisplayCurrentAddress(address);
       }
     }
   };
 
-  return <Text>{displayCurrentAddress}</Text>;
+  return <Text style={styles.titleText}>{displayCurrentAddress}</Text>;
 };
 
-const styles = StyleSheet.create({});
+const styles = StyleSheet.create({
+  titleText: {
+    color: "#ffffff",
+    fontFamily: "PoppinsBold",
+  },
+});
