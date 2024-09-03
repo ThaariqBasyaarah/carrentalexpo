@@ -10,6 +10,7 @@ import * as SecureStore from 'expo-secure-store';
 
 import { useSelector, useDispatch } from 'react-redux'
 import { getCar, selectCar } from '@/redux/reducers/car/carSlice'
+import GeoLocation from "../../components/GeoLocation";
 
 export default function HomeScreen() {
   const { data, isLoading } = useSelector(selectCar)
@@ -50,7 +51,7 @@ export default function HomeScreen() {
         <View style={styles.container}>
           <View>
             <Text style={styles.titleText}>Hi, Nama</Text>
-            <Text style={styles.titleText}>Location</Text>
+            <GeoLocation/>
           </View>
           <View>
             <Image

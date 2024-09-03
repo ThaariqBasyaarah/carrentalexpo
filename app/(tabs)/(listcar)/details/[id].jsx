@@ -19,7 +19,7 @@ import Button from "@/components/Button";
 import { Row, Col } from "@/components/Grid";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { normalize } from "@/utils/normalize";
-import { setCarId } from "@/redux/reducers/order/orderSlice";
+import { setCarId, resetState } from "@/redux/reducers/order/orderSlice";
 
 const formatCurrency = new Intl.NumberFormat("id-ID", {
   style: "currency",
@@ -100,6 +100,7 @@ export default function details() {
           color="#3D7B3F"
           onPress={() => {
             dispatch(setCarId(id))
+            dispatch(resetState())
             router.navigate("(order)")
           }}
           title="Lanjutkan Pembayaran"
