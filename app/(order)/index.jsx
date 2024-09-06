@@ -20,7 +20,7 @@ export default function index() {
     <View style={{ flex: 1,  backgroundColor: "#fff" }}>
       <ProgressSteps activeStep={activeStep}>
         <ProgressStep label="Pilih Metode" removeBtnRow={true}>
-          <Step1/>
+          <Step1 activeStep={activeStep} setActiveStep={setActiveStep}/>
         </ProgressStep>
         <ProgressStep label="Bayar" removeBtnRow={true}>
           <Step2/>
@@ -30,15 +30,37 @@ export default function index() {
         </ProgressStep>
       </ProgressSteps>
       <View style={styles.footer}>
-        <Text style={styles.price}>{formatIDR(data.price || 0)}</Text>
-        <Button
-          disabled={!selectedBank && true}
-          color="#3D7B3F"
-          onPress={() => {
-            dispatch(setStateByName({name: 'activeStep', value: 1}));
-          }}
-          title="Lanjutkan Pembayaran"
-        />
+        {activeStep === 0 && 
+          <>
+            <Text style={styles.price}>{formatIDR(data.price || 0)}</Text>
+            <Button
+              disabled={!selectedBank && true}
+              color="#3D7B3F"
+              onPress={() => {
+                dispatch(setStateByName({name: 'activeStep', value: 1}));
+              }}
+              title="Lanjutkan Pembayaran"
+            />
+          </>
+        }
+        {activeStep === 1 && 
+          <>
+            <Text style={styles.label}>Klik konfirmasi pembayaran untuk mempercepat proses pengecekan</Text>
+            <Button
+              color="#3D7B3F"
+              style={{ marginBottom: 10 }}
+              onPress={() => {
+                dispatch(setStateByName({name: 'isModalVisible', value: true}));
+              }}
+              title="Konfirmasi Pembayaran"
+            />
+            <Button
+              color="#ffffff"
+              textColor="#000"
+              title="Lihat Daftar Pesanan"
+            />
+          </>
+        }
       </View>
     </View>
   );
@@ -48,6 +70,11 @@ const styles = StyleSheet.create({
   price: {
     fontFamily: "PoppinsBold",
     fontSize: 20,
+    marginBottom: 10,
+  },
+  label:{
+    fontFamily: "PoppinsBold",
+    fontSize: 14,
     marginBottom: 10,
   },
   footer: {

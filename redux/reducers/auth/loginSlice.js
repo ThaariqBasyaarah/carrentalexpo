@@ -25,7 +25,8 @@ const loginSlice = createSlice({
       state.data = {}
       state.isLogin = false
       SecureStore.deleteItemAsync("user")
-    }
+    },
+    postLogin: postLogin
   },
   extraReducers: (builder) => {
     builder.addCase(postLogin.pending, (state, action) => {

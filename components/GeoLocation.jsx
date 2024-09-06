@@ -31,7 +31,6 @@ export default GeoLocation = () => {
   //get current location
   const getCurrentLocation = async () => {
     let { status } = await Location.requestForegroundPermissionsAsync(); //used for the pop up box where we give permission to use location
-    console.log(status);
     if (status !== "granted") {
       Alert.alert(
         "Permission denied",
@@ -49,18 +48,15 @@ export default GeoLocation = () => {
 
     //get current position lat and long
     const { coords } = await Location.getCurrentPositionAsync();
-    console.log(coords);
 
     if (coords) {
       const { latitude, longitude } = coords;
-      console.log(latitude, longitude);
 
       //provide lat and long to get the the actual address
       let responce = await Location.reverseGeocodeAsync({
         latitude,
         longitude,
       });
-      console.log(responce);
       //loop on the responce to get the actual result
       for (let item of responce) {
         const loc =

@@ -1,4 +1,12 @@
-import { View, Text, TextInput, StyleSheet, Pressable, Alert } from "react-native";
+import {
+  View,
+  Text,
+  TextInput,
+  StyleSheet,
+  Pressable,
+  Alert,
+  Modal,
+} from "react-native";
 import { useCallback, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { selectOrder, setStateByName } from "@/redux/reducers/order/orderSlice";
@@ -7,38 +15,60 @@ import CarList from "@/components/CarList";
 import Button from "@/components/Button";
 import { Ionicons } from "@expo/vector-icons";
 import CountDown from "react-native-countdown-component-maintained";
-import formatIDR from '@/utils/currencyFormat';
-import * as Clipboard from 'expo-clipboard';
+import formatIDR from "@/utils/currencyFormat";
+import * as Clipboard from "expo-clipboard";
+import * as ImagePicker from "expo-image-picker";
+import ModalDraggable from "../../../components/ModalDraggable";
 
-function getDate24(){
-  const date24 = new Date() // your date object
-  date24.setHours(date24.getHours() + 24)
-  return date24.toString()
+function getDate24() {
+  const date24 = new Date(); // your date object
+  date24.setHours(date24.getHours() + 24);
+  return date24.toString();
 }
 
 export default function step2() {
   const [promoText, setPromoText] = useState(null);
-  const { selectedBank, promo } = useSelector(selectOrder);
+  const { selectedBank, promo, isModalVisible } = useSelector(selectOrder);
   const { data } = useSelector(selectCarDetails);
+
+  const [image, setImage] = useState(null);
+
   const dispatch = useDispatch();
 
   const copyToClipboard = async (text) => {
-    const str = text.toString()
-    await Clipboard.setStringAsync(str)
-  }
+    const str = text.toString();
+    await Clipboard.setStringAsync(str);
+  };
+
+  const pickImage = async () => {
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.All,
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1,
+    });
+
+    console.log(result);
+
+    if (!result.canceled) {
+      setImage(result.assets[0].uri);
+    }
+  };
 
   return (
     <View style={{ flex: 1 }}>
       <View style={styles.container}>
         <View style={styles.countDownWrapper}>
-          <Text style={styles.countDownText}>Selesaikan Pembayaran Sebelum</Text>
+          <Text style={styles.countDownText}>
+            Selesaikan Pembayaran Sebelum
+          </Text>
           <CountDown
             until={86400}
-            digitStyle={{backgroundColor:'#FA2C5A'}}
-            digitTxtStyle={{color:'#fff'}}
-            timeLabelStyle={{display:'none'}}
-            onFinish={() => Alert('finished')}
-            timeToShow={['H', 'M', 'S']}
+            digitStyle={{ backgroundColor: "#FA2C5A" }}
+            digitTxtStyle={{ color: "#fff" }}
+            timeLabelStyle={{ display: "none" }}
+            onFinish={() => Alert("finished")}
+            timeToShow={["H", "M", "S"]}
             size={12}
           />
         </View>
@@ -56,39 +86,70 @@ export default function step2() {
             marginBottom: 10,
           }}
         >
-            <View
-              style={styles.paymentMethod}
-            >
-              <Text style={styles.paymentBox}>{selectedBank.bankName}</Text>
-              <View style={styles.paymentText}>
-                <Text>{selectedBank.bankName} Transfer</Text>
-                <Text>{selectedBank.name}</Text>
-              </View>
+          <View style={styles.paymentMethod}>
+            <Text style={styles.paymentBox}>{selectedBank?.bankName}</Text>
+            <View style={styles.paymentText}>
+              <Text>{selectedBank?.bankName} Transfer</Text>
+              <Text>{selectedBank?.name}</Text>
             </View>
+          </View>
         </View>
-        <View>
+        <View style={styles.readOnlyInputWrapper}>
           <Text>Nomor Rekening</Text>
-          <View>
-            <Text>12345678</Text>
-            <Pressable
-              onPress={() => copyToClipboard(12345678)}
-              >
-              <Ionicons color={"#3C3C3C"} name={"copy-outline"} size={14}/>
+          <View style={styles.readOnlyInput}>
+            <Text style={styles.readOnlyInputText}>12345678</Text>
+            <Pressable onPress={() => copyToClipboard(12345678)}>
+              <Ionicons color={"#3C3C3C"} name={"copy-outline"} size={14} />
             </Pressable>
           </View>
         </View>
-        <View>
+        <View style={styles.readOnlyInputWrapper}>
           <Text>Total Bayar</Text>
-          <View>
-            <Text>{formatIDR(data.price)}</Text>
-            <Pressable
-              onPress={() => copyToClipboard(data.price)}
-              >
-              <Ionicons color={"#3C3C3C"} name={"copy-outline"} size={14}/>
+          <View style={styles.readOnlyInput}>
+            <Text style={styles.readOnlyInputText}>
+              {formatIDR(data.price)}
+            </Text>
+            <Pressable onPress={() => copyToClipboard(data.price)}>
+              <Ionicons color={"#3C3C3C"} name={"copy-outline"} size={14} />
             </Pressable>
           </View>
         </View>
       </View>
+
+      <ModalDraggable
+        isVisible={isModalVisible}
+        onClose={() => {
+          dispatch(setStateByName({ name: "isModalVisible", value: false }));
+        }}
+      >
+        <Text style={styles.textBold}>Konfirmasi Pembayaran</Text>
+        <Text style={styles.textBold}>
+          Terima kasih telah melakukan konfirmasi pembayaran. Pembayaranmu akan
+          segera kami cek tunggu kurang lebih 10 menit untuk mendapatkan
+          konfirmasi.
+        </Text>
+        <CountDown
+          until={600}
+          digitStyle={{ backgroundColor: "#FA2C5A" }}
+          digitTxtStyle={{ color: "#fff" }}
+          timeLabelStyle={{ display: "none" }}
+          onFinish={() => Alert("finished")}
+          timeToShow={["M", "S"]}
+          size={12}
+        />
+        <Text style={styles.textBold}>Pembayaran</Text>
+        <Text style={styles.textBold}>
+          Untuk membantu kami lebih cepat melakukan pengecekan. Kamu bisa upload
+          bukti bayarmu
+        </Text>
+        <Pressable style={styles.uploadImage} onPress={pickImage}>
+          {image ? (
+            <Image source={{ uri: image }} style={styles.image} />
+          ) : (
+            <Ionicons color={"#3C3C3C"} name={"image-outline"} size={14} />
+          )}
+        </Pressable>
+      </ModalDraggable>
     </View>
   );
 }
@@ -162,5 +223,24 @@ const styles = StyleSheet.create({
     fontFamily: "PoppinsBold",
     fontSize: 14,
     marginBottom: 10,
-  }
+  },
+  uploadImage: {
+    height: 400,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "#D0D0D0",
+  },
+  readOnlyInput: {
+    marginVertical: 10,
+    padding: 10,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    borderWidth: 1,
+    borderColor: "#D0D0D0",
+  },
+  readOnlyInputText: {
+    fontFamily: "PoppinsBold",
+    fontSize: 16,
+  },
 });

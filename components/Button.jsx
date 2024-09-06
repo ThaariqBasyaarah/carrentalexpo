@@ -4,7 +4,7 @@ import Animated, { useSharedValue, withSpring } from "react-native-reanimated";
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
-export default Button = ({ title, children, color, disabled = false, onPress, style }) => {
+export default Button = ({ title, children, textColor, color, disabled = false, onPress, style }) => {
   const opacity = useSharedValue(1);
 
   const handlePressIn = () => {
@@ -31,7 +31,7 @@ export default Button = ({ title, children, color, disabled = false, onPress, st
       }}
     >
       {!children ? <Text style={{
-        color:"#fff",
+        color: textColor ||"#fff",
         fontFamily: "PoppinsBold",
         fontSize: 14,
       }}
