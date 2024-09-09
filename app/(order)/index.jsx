@@ -13,17 +13,16 @@ import { selectOrder, setStateByName, postOrder } from "@/redux/reducers/order/o
 import { selectUser } from "@/redux/reducers/auth/loginSlice";
 import { useDispatch, useSelector } from "react-redux";
 import moment from "moment";
-import { ErrorMessage } from "formik";
 
 export default function index() {
-  const { data } = useSelector(selectCarDetails);
-  const { activeStep, selectedBank, status, errorMessage } = useSelector(selectOrder)
+  const carDetails = useSelector(selectCarDetails);
+  const { data, activeStep, selectedBank, status, errorMessage } = useSelector(selectOrder)
   const user = useSelector(selectUser)
   const dispatch = useDispatch()
 
   const handleOrder = () => {
     const formData = {
-      carId: data.id,
+      carId: carDetails.data.id,
       startRentAt: moment().format('YYYY-MM-DD'),
       finishRentAt: moment().add(4, "days").format('YYYY-MM-DD'),
     }
@@ -33,6 +32,7 @@ export default function index() {
 
   useEffect(() => {
     if(status === "success"){
+      console.log(data)
       dispatch(setStateByName({name: 'activeStep', value: 1}));
     }else{
       console.log(errorMessage)

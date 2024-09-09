@@ -55,6 +55,7 @@ const orderSlice = createSlice({
     builder.addCase(putOrderSlip.fulfilled, (state, action) => {
       state.isLoading = false;
       state.data = action.payload;
+      state.status = "upload-success"
     });
     builder.addCase(putOrderSlip.rejected, (state, action) => {
       state.isLoading = false

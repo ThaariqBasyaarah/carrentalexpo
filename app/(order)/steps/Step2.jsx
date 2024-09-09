@@ -6,11 +6,15 @@ import {
   Pressable,
   Alert,
   Modal,
+  Image,
 } from "react-native";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
+
 import { useDispatch, useSelector } from "react-redux";
-import { selectOrder, setStateByName } from "@/redux/reducers/order/orderSlice";
+import { selectOrder, setStateByName, putOrderSlip } from "@/redux/reducers/order/orderSlice";
 import { selectCarDetails } from "@/redux/reducers/car/carDetailsSlice";
+import { selectUser } from "@/redux/reducers/auth/loginSlice";
+
 import CarList from "@/components/CarList";
 import Button from "@/components/Button";
 import { Ionicons } from "@expo/vector-icons";
@@ -28,8 +32,8 @@ function getDate24() {
 
 export default function step2() {
   const [promoText, setPromoText] = useState(null);
-  const { selectedBank, promo, isModalVisible } = useSelector(selectOrder);
-  const { data } = useSelector(selectCarDetails);
+  const { data, selectedBank, errorMessage, isModalVisible, status } = useSelector(selectOrder);
+  const user = useSelector(selectUser);
 
   const [image, setImage] = useState(null);
 
@@ -45,15 +49,41 @@ export default function step2() {
       mediaTypes: ImagePicker.MediaTypeOptions.All,
       allowsEditing: true,
       aspect: [4, 3],
-      quality: 1,
+      quality: 0.2,
     });
 
     console.log(result);
 
     if (!result.canceled) {
-      setImage(result.assets[0].uri);
+      setImage({
+        uri: result.assets[0].uri,
+        name: result.assets[0].fileName,
+        type: result.assets[0].mimeType,
+      });
     }
   };
+
+  const handleUpload = () => {
+    console.log("upload")
+    if (image) {
+      const formData = new FormData();
+      formData.append("slip", image);
+      dispatch(putOrderSlip({
+        token: user.data.access_token,
+        id: data.id,
+        formData
+      }));
+    }
+  }
+
+  useEffect(() => {
+    if(status === "upload-success"){
+      console.log(data)
+      dispatch(setStateByName({name: 'activeStep', value: 2}));
+    }else{
+      console.log(errorMessage)
+    }
+  }, [status])
 
   return (
     <View style={{ flex: 1 }}>
@@ -144,11 +174,24 @@ export default function step2() {
         </Text>
         <Pressable style={styles.uploadImage} onPress={pickImage}>
           {image ? (
-            <Image source={{ uri: image }} style={styles.image} />
+            <Image 
+              source={{ uri: image.uri }} 
+              resizeMode="cover" 
+              width={"100%"}
+              height={300}
+              style={styles.image} 
+              />
           ) : (
-            <Ionicons color={"#3C3C3C"} name={"image-outline"} size={14} />
+            <View style={styles.iconUpload}>
+              <Ionicons color={"#3C3C3C"} name={"image-outline"} size={14} />
+            </View>
           )}
         </Pressable>
+        <Button 
+          title="Upload"
+          color="#3D7B3F"
+          onPress={handleUpload}
+          />
       </ModalDraggable>
     </View>
   );
@@ -226,9 +269,11 @@ const styles = StyleSheet.create({
   },
   uploadImage: {
     height: 400,
-    alignItems: "center",
-    justifyContent: "center",
     backgroundColor: "#D0D0D0",
+  },
+  image:{
+    height: 400,
+    width: "auto"
   },
   readOnlyInput: {
     marginVertical: 10,
