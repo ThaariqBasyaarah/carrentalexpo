@@ -11,6 +11,7 @@ const initialState = {
   selectedBank: null,
   promo: null,
   isModalVisible: false,
+  status: "pending",
   // paymentCountdown: null,
   // verificationCountdown: null,
 };
@@ -37,11 +38,13 @@ const orderSlice = createSlice({
     builder.addCase(postOrder.fulfilled, (state, action) => {
       state.isLoading = false;
       state.data = action.payload;
+      state.status = "success";
       // state.isModalVisible = true;
     });
     builder.addCase(postOrder.rejected, (state, action) => {
       state.isLoading = false
-      // state.isError = true;
+      state.isError = true;
+      state.status = "error";
       state.errorMessage = action.payload
       // state.isModalVisible = true;
     });

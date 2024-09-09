@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { View, Text, StyleSheet } from "react-native";
 import { ProgressStep, ProgressSteps } from "react-native-progress-stepper";
 
@@ -9,18 +9,41 @@ import Step2 from "./steps/Step2";
 import Step3 from "./steps/Step3";
 
 import { selectCarDetails } from "@/redux/reducers/car/carDetailsSlice";
-import { selectOrder, setStateByName } from "@/redux/reducers/order/orderSlice"
+import { selectOrder, setStateByName, postOrder } from "@/redux/reducers/order/orderSlice"
+import { selectUser } from "@/redux/reducers/auth/loginSlice";
 import { useDispatch, useSelector } from "react-redux";
+import moment from "moment";
+import { ErrorMessage } from "formik";
 
 export default function index() {
   const { data } = useSelector(selectCarDetails);
-  const { activeStep, selectedBank } = useSelector(selectOrder)
+  const { activeStep, selectedBank, status, errorMessage } = useSelector(selectOrder)
+  const user = useSelector(selectUser)
   const dispatch = useDispatch()
+
+  const handleOrder = () => {
+    const formData = {
+      carId: data.id,
+      startRentAt: moment().format('YYYY-MM-DD'),
+      finishRentAt: moment().add(4, "days").format('YYYY-MM-DD'),
+    }
+
+    dispatch(postOrder({token:user.data.access_token, formData}))
+  }
+
+  useEffect(() => {
+    if(status === "success"){
+      dispatch(setStateByName({name: 'activeStep', value: 1}));
+    }else{
+      console.log(errorMessage)
+    }
+  }, [status])
+
   return (
     <View style={{ flex: 1,  backgroundColor: "#fff" }}>
       <ProgressSteps activeStep={activeStep}>
         <ProgressStep label="Pilih Metode" removeBtnRow={true}>
-          <Step1 activeStep={activeStep} setActiveStep={setActiveStep}/>
+          <Step1/>
         </ProgressStep>
         <ProgressStep label="Bayar" removeBtnRow={true}>
           <Step2/>
@@ -36,9 +59,7 @@ export default function index() {
             <Button
               disabled={!selectedBank && true}
               color="#3D7B3F"
-              onPress={() => {
-                dispatch(setStateByName({name: 'activeStep', value: 1}));
-              }}
+              onPress={handleOrder}
               title="Lanjutkan Pembayaran"
             />
           </>
