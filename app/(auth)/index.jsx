@@ -6,6 +6,12 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 import { Link, router } from "expo-router";
 import { useDispatch, useSelector } from "react-redux";
 import { postLogin, selectUser, closeModal } from '@/redux/reducers/auth/loginSlice';
+import auth from '@react-native-firebase/auth';
+import { GoogleSignin, GoogleSigninButton  } from '@react-native-google-signin/google-signin';
+
+GoogleSignin.configure({
+  webClientId: process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID
+});
 
 export default function Login() {
   const dispatch = useDispatch();
@@ -26,6 +32,26 @@ export default function Login() {
     console.log("test submit", formData);
     dispatch(postLogin(formData))
   }, [formData]);
+
+  async function onGoogleButtonPress() {
+    await GoogleSignin.hasPlayServices({ showPlayServicesUpdateDialog: true });
+  
+    const { data: { idToken } } = await GoogleSignin.signIn();
+
+    const googleCredential = auth.GoogleAuthProvider.credential(idToken);
+    console.log(idToken, googleCredential)
+    return auth().signInWithCredential(googleCredential);
+  }
+
+  function onAuthStateChanged(user) {
+    console.log(user)
+    // if (initializing) setInitializing(false);
+  }
+
+  useEffect(() => {
+    const subscriber = auth().onAuthStateChanged(onAuthStateChanged);
+    return subscriber; // unsubscribe on unmount
+  }, []);
   
   useEffect(() => {
     if(isModalVisible) {
@@ -69,6 +95,15 @@ export default function Login() {
             Sign up for free
           </Link>
         </Text>
+      </View>
+      <View>
+        <Text>Or</Text>
+        <GoogleSigninButton
+          size={GoogleSigninButton.Size.Wide}
+          color={GoogleSigninButton.Color.Dark}
+          onPress={onGoogleButtonPress}
+          // disabled={isInProgress}
+        />
       </View>
       <ModalPopup visible={isModalVisible}>
         <View style={styles.modalBackground}>
