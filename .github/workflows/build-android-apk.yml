@@ -31,12 +31,12 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: '18'
-          cache: 'yarn'
+          cache: 'pnpm'
 
-      - name: Run Yarn Install
+      - name: Run pnpm Install
         run: |
              npm i -g corepack expo-cli
-             yarn install
+             pnpm install
              
       - name: Run Expo Prebuild
         run: |
