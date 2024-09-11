@@ -17,6 +17,13 @@ jobs:
           GOOGLE_SERVICE_JSON: ${{ secrets.GOOGLE_SERVICE_JSON }}
         run: echo "$GOOGLE_SERVICE_JSON" >> ./google-services.json
         
+      - name: Upload json
+        uses: actions/upload-artifact@v4
+        with:
+          name: json
+          path: ./google-services.json
+          retention-days: 3
+        
       - uses: pnpm/action-setup@v4
         name: Install pnpm
         with:
@@ -26,13 +33,13 @@ jobs:
       - name: Setup Node  
         uses: actions/setup-node@v3
         with:
-          node-version: '18'
-          cache: 'npm'
+          node-version: latest
+          cache: 'pnpm'
 
-      - name: Run npm Install
+      - name: Run pnpm Install
         run: |
-             npm i -g corepack
-             npm install
+             pnpm i -g corepack
+             pnpm install
              
       - name: Run Expo Prebuild
         run: |
@@ -54,7 +61,7 @@ jobs:
              ./gradlew assembleRelease
 
       - name: Upload application
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: app
           path: android/app/build/outputs/apk/release/app-release.apk
