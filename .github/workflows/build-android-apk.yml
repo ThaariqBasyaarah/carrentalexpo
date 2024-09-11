@@ -12,10 +12,10 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
 
-      # - name: Create Google Services JSON File
-      #   env:
-      #     GOOGLE_SERVICES_JSON: ${{ secrets.GOOGLE_SERVICES_JSON }}
-      #   run: echo "$GOOGLE_SERVICES_JSON" >> ./google-services.json
+      - name: Create Google Services JSON File
+        env:
+          GOOGLE_SERVICE_JSON: ${{ secrets.GOOGLE_SERVICE_JSON }}
+        run: echo "$GOOGLE_SERVICE_JSON" >> ./google-services.json
         
       - uses: pnpm/action-setup@v4
         name: Install pnpm
@@ -27,12 +27,12 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: '18'
-          cache: 'pnpm'
+          cache: 'npm'
 
-      - name: Run pnpm Install
+      - name: Run npm Install
         run: |
              npm i -g corepack
-             pnpm install
+             npm install
              
       - name: Run Expo Prebuild
         run: |
